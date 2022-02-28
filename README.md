@@ -1,13 +1,7 @@
-# angular-sketchpad
+# angular-sketch-rotation
 
-[![Show Video](http://img.youtube.com/vi/gJ50_FGEeKA/0.jpg)](http://www.youtube.com/watch?v=gJ50_FGEeKA)
+[![Show Video](https://user-images.githubusercontent.com/8390232/156061927-7149f330-ca69-475a-a348-29970c6fa595.png)](http://www.youtube.com/watch?v=gJ50_FGEeKA)
 
-This project creates a sketchpad with [Angular](https://angular.io/) and [P5JS](https://p5js.org/).
+This project creates an animated scene with [Angular](https://angular.io/) and [P5JS](https://p5js.org/). It is based heavily on the examples [here](https://editor.p5js.org/icm/sketches/BJKWv5Tn) and [here](https://github.com/andrewevans0102/angular-sketchpad).
 
 To run it locally just run `npm run start`.
-
-The P5JS sketch that I created was orignally copied [from here](https://editor.p5js.org/Janglee123/sketches/HJ2RnrQzN).
-
-I found this [stackoverflow article](https://stackoverflow.com/questions/49472433/how-to-use-p5-js-in-angular-5-application/53464162) helpful when setting up P5JS with Angular.
-
-If you wanted to move the sketch around on the page, I found [this page](https://github.com/processing/p5.js/wiki/Positioning-your-canvas) on the Processing Wiki helpful.

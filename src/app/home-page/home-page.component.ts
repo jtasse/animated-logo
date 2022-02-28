@@ -1,69 +1,119 @@
-import { Component, OnInit } from '@angular/core';
-import * as p5 from 'p5';
+import { Component, OnInit } from "@angular/core";
+import * as p5 from "p5";
 
 @Component({
-  selector: 'app-home-page',
-  templateUrl: './home-page.component.html',
-  styleUrls: ['./home-page.component.scss']
+  selector: "app-home-page",
+  templateUrl: "./home-page.component.html",
+  styleUrls: ["./home-page.component.scss"],
 })
 export class HomePageComponent implements OnInit {
+  private p5;
   canvas: any;
-  sw = 2;
-  c = [];
-  strokeColor = 0;
-
-  constructor() {}
 
   ngOnInit() {
-    // this sketch was modified from the original
-    // https://editor.p5js.org/Janglee123/sketches/HJ2RnrQzN
-    const sketch = s => {
-      s.setup = () => {
-        let canvas2 = s.createCanvas(s.windowWidth - 200, s.windowHeight - 200);
-        // creating a reference to the div here positions it so you can put things above and below
-        // where the sketch is displayed
-        canvas2.parent('sketch-holder');
+    this.setup();
+  }
 
-        s.background(255);
-        s.strokeWeight(this.sw);
+  private setup() {
+    this.createSketch();
+  }
 
-        this.c[0] = s.color(148, 0, 211);
-        this.c[1] = s.color(75, 0, 130);
-        this.c[2] = s.color(0, 0, 255);
-        this.c[3] = s.color(0, 255, 0);
-        this.c[4] = s.color(255, 255, 0);
-        this.c[5] = s.color(255, 127, 0);
-        this.c[6] = s.color(255, 0, 0);
+  private createSketch() {
+    this.p5 = new p5(this.sketch);
+  }
 
-        s.rect(0, 0, s.width, s.height);
+  private sketch(p: any) {
+    var canvasWidth: number = 1920 * 0.8;
+    var canvasHeight: number = 1080 * 0.8;
 
-        s.stroke(this.c[this.strokeColor]);
-      };
+    var rectStartX = p.random(containerWidth);
+    var rectStartY = p.random(containerHeight);
 
-      s.draw = () => {
-        if (s.mouseIsPressed) {
-          if (s.mouseButton === s.LEFT) {
-            s.line(s.mouseX, s.mouseY, s.pmouseX, s.pmouseY);
-          } else if (s.mouseButton === s.CENTER) {
-            s.background(255);
-          }
-        }
-      };
+    var rectWidth = 100;
+    var rectHeight = 100;
 
-      s.mouseReleased = () => {
-        // modulo math forces the color to swap through the array provided
-        this.strokeColor = (this.strokeColor + 1) % this.c.length;
-        s.stroke(this.c[this.strokeColor]);
-        console.log(`color is now ${this.c[this.strokeColor]}`);
-      };
+    var dotWidth = 5;
 
-      s.keyPressed = () => {
-        if (s.key === 'c') {
-          window.location.reload();
-        }
-      };
+    p.setup = () => {
+      p.createCanvas(canvasWidth, canvasHeight, p.WEBGL);
+      p.strokeWeight(dotWidth);
     };
 
-    this.canvas = new p5(sketch);
+    var rectEndX = rectStartX + rectWidth;
+    var rectEndY = rectStartY + rectHeight;
+
+    var rectSpeedX = 1;
+    var rectSpeedY = 1;
+
+    var frameCount = 0;
+    var radian = 360 / 2;
+    var degree = radian / 180;
+
+    var containerXPos = -(canvasWidth / 4);
+    var containerYPos = -(canvasHeight / 4);
+    var containerWidth = canvasWidth / 2;
+    var containerHeight = canvasHeight / 2;
+
+    var containerXMax = containerXPos + containerWidth;
+    var containerYMax = containerYPos + containerHeight;
+
+    p.draw = () => {
+      degree = frameCount++;
+
+      p.background(125);
+
+      p.rotateX(degree / 75);
+      p.rotateY(degree / 75);
+
+      p.push();
+      p.noFill();
+      p.rect(containerXPos, containerYPos, containerWidth, containerHeight);
+      p.pop();
+
+      p.fill(frameCount * 0.3, frameCount * 0.2, frameCount * 0.1);
+      p.rect(rectStartX, rectStartY, rectWidth, rectHeight);
+
+      rectStartX = rectStartX + rectSpeedX;
+      rectEndX = rectEndX + rectSpeedX;
+
+      rectStartY = rectStartY + rectSpeedY;
+      rectEndY = rectEndY + rectSpeedY;
+
+      // X max
+      if (rectStartX >= containerXMax) {
+        rectSpeedX = -rectSpeedX;
+        rectStartX = containerXMax;
+      } else if (rectEndX >= containerXMax) {
+        rectSpeedX = -rectSpeedX;
+        rectEndX = containerXMax;
+      }
+
+      // X min
+      else if (rectStartX <= containerXPos) {
+        rectSpeedX = -rectSpeedX;
+        rectStartX = containerXPos;
+      } else if (rectEndX <= containerXPos) {
+        rectSpeedX = -rectSpeedX;
+        rectEndX = containerXPos;
+      }
+
+      // Y max
+      if (rectStartY >= containerYMax) {
+        rectSpeedY = -rectSpeedY;
+        rectStartY = containerYMax;
+      } else if (rectEndY >= containerYMax) {
+        rectSpeedY = -rectSpeedY;
+        rectEndY = containerYMax;
+      }
+
+      // Y min
+      else if (rectStartY <= containerYPos) {
+        rectSpeedY = -rectSpeedY;
+        rectStartY = containerYPos;
+      } else if (rectEndY <= containerYPos) {
+        rectSpeedY = -rectSpeedY;
+        rectEndY = containerYPos;
+      }
+    };
   }
 }

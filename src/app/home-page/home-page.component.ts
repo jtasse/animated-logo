@@ -34,6 +34,12 @@ export class HomePageComponent implements OnInit {
 
     var dotWidth = 5;
 
+    var img;
+
+    p.preload = () => {
+      img = p.loadImage("assets/JT.png"); // Place your image in src/assets/JT.png
+    };
+
     p.setup = () => {
       p.createCanvas(canvasWidth, canvasHeight, p.WEBGL);
       p.strokeWeight(dotWidth);
@@ -59,19 +65,52 @@ export class HomePageComponent implements OnInit {
 
     p.draw = () => {
       degree = frameCount++;
-
       p.background(125);
-
       p.rotateX(degree / 75);
       p.rotateY(degree / 75);
-
       p.push();
-      p.noFill();
+      //p.fill(100);
       p.rect(containerXPos, containerYPos, containerWidth, containerHeight);
       p.pop();
+      p.colorMode(p.RGB, 255); // Reset color mode for rest of drawing
+      p.rect(containerXPos, containerYPos, containerWidth, containerHeight);
+      p.pop();
+      // Draw the moving rectangle and its image together
+      p.push();
+      p.translate(rectStartX + rectWidth / 2, rectStartY + rectHeight / 2, 5); // Move further forward in z
+      p.rectMode(p.CENTER);
+      if (img) {
+        p.noStroke();
+        p.texture(img);
+        p.plane(rectWidth, rectHeight);
+      } else {
+        p.fill(255);
+        p.noStroke();
+        p.plane(rectWidth, rectHeight);
+      }
+      p.pop();
 
-      p.fill(frameCount * 0.3, frameCount * 0.2, frameCount * 0.1);
-      p.rect(rectStartX, rectStartY, rectWidth, rectHeight);
+      // Only use 'happy' colors for the fill (skip brown/earthy tones)
+      // We'll use a custom palette of bright, saturated colors
+      const happyColors = [
+        [255, 0, 0],    // Red
+        [255, 128, 0],  // Orange
+        [255, 255, 0],  // Yellow
+        [0, 255, 0],    // Green
+        [0, 255, 255],  // Cyan
+        [0, 128, 255],  // Blue
+        [128, 0, 255],  // Purple
+        [255, 0, 255]   // Magenta
+      ];
+      const transitionFrames = 180; // Slow down: 90 frames per color (1.5s at 60fps)
+      const colorIndex = Math.floor((frameCount / transitionFrames) % happyColors.length);
+      const nextIndex = (colorIndex + 1) % happyColors.length;
+      const t = (frameCount % transitionFrames) / transitionFrames;
+      // Interpolate between two happy colors for smooth transition
+      const r = Math.round(happyColors[colorIndex][0] * (1 - t) + happyColors[nextIndex][0] * t);
+      const g = Math.round(happyColors[colorIndex][1] * (1 - t) + happyColors[nextIndex][1] * t);
+      const b = Math.round(happyColors[colorIndex][2] * (1 - t) + happyColors[nextIndex][2] * t);
+      p.fill(r, g, b);
 
       rectStartX = rectStartX + rectSpeedX;
       rectEndX = rectEndX + rectSpeedX;

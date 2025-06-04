@@ -37,12 +37,14 @@ export class HomePageComponent implements OnInit {
     var img;
 
     p.preload = () => {
-      img = p.loadImage("assets/JT.png"); // Place your image in src/assets/JT.png
+      img = p.loadImage("assets/JTJ.png"); // Place your image in src/assets/JT.png
     };
 
     p.setup = () => {
-      p.createCanvas(canvasWidth, canvasHeight, p.WEBGL);
+      const canvas = p.createCanvas(canvasWidth, canvasHeight, p.WEBGL);
       p.strokeWeight(dotWidth);
+      // Attach canvas to the scene-wrapper
+      canvas.parent('scene-wrapper');
     };
 
     var rectEndX = rectStartX + rectWidth;
@@ -65,19 +67,30 @@ export class HomePageComponent implements OnInit {
 
     p.draw = () => {
       degree = frameCount++;
-      p.background(125);
+      p.background(0);
+
+      // Zoom out the scene
+      p.scale(0.7); // Try 0.7 or lower if still clipping
+
+      // Rotate the whole scene
       p.rotateX(degree / 75);
       p.rotateY(degree / 75);
+
       p.push();
-      //p.fill(100);
       p.rect(containerXPos, containerYPos, containerWidth, containerHeight);
       p.pop();
+
       p.colorMode(p.RGB, 255); // Reset color mode for rest of drawing
       p.rect(containerXPos, containerYPos, containerWidth, containerHeight);
-      p.pop();
+
       // Draw the moving rectangle and its image together
       p.push();
       p.translate(rectStartX + rectWidth / 2, rectStartY + rectHeight / 2, 5); // Move further forward in z
+
+      // Remove independent rotation for the JT box
+      // p.rotateX(degree / 30);
+      // p.rotateY(degree / 45);
+
       p.rectMode(p.CENTER);
       if (img) {
         p.noStroke();

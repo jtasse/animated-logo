@@ -2,8 +2,8 @@
   "name": "angular-sketchpad",
   "version": "0.0.0",
   "scripts": {
+    "start": "set NODE_OPTIONS=--openssl-legacy-provider && ng serve",
     "ng": "ng",
-    "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

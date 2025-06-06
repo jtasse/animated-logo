@@ -1,10 +1,12 @@
-import { Component, OnInit } from "@angular/core";
 import * as p5 from "p5";
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+
 
 @Component({
   selector: "app-home-page",
   templateUrl: "./home-page.component.html",
   styleUrls: ["./home-page.component.scss"],
+  encapsulation: ViewEncapsulation.None,
 })
 export class HomePageComponent implements OnInit {
   private p5;
@@ -29,8 +31,8 @@ export class HomePageComponent implements OnInit {
     var rectStartX = p.random(containerWidth);
     var rectStartY = p.random(containerHeight);
 
-    var rectWidth = 100;
-    var rectHeight = 100;
+    var rectWidth = 200;
+    var rectHeight = 200;
 
     var dotWidth = 5;
 
@@ -41,10 +43,29 @@ export class HomePageComponent implements OnInit {
     };
 
     p.setup = () => {
+      p.setAttributes('alpha', true);      // enable WebGL transparency
+      p.setAttributes('premultipliedAlpha', false); // optional for better blending
+
       const canvas = p.createCanvas(canvasWidth, canvasHeight, p.WEBGL);
-      p.strokeWeight(dotWidth);
-      // Attach canvas to the scene-wrapper
+
+      // Access the WebGL context and force alpha support
+      const gl = p._renderer.GL; // Same as p.drawingContext
+      const contextAttributes = gl.getContextAttributes();
+
+      if (!contextAttributes.alpha) {
+        console.warn("WebGL context is NOT alpha-capable. Transparency will not work.");
+      }
+
+      // Style the canvas DOM element
+      canvas.elt.style.backgroundColor = 'transparent';
+      canvas.elt.style.position = 'absolute'; // optional: ensures stacking
+      canvas.elt.style.zIndex = '10'; // optional
+
+      // Attach to your DOM element
       canvas.parent('scene-wrapper');
+
+      // Clear the canvas every frame for transparency
+      p.clear();
     };
 
     var rectEndX = rectStartX + rectWidth;
@@ -66,8 +87,8 @@ export class HomePageComponent implements OnInit {
     var containerYMax = containerYPos + containerHeight;
 
     p.draw = () => {
+      p.clear();
       degree = frameCount++;
-      p.background(0);
 
       // Zoom out the scene
       p.scale(0.7); // Try 0.7 or lower if still clipping
@@ -86,10 +107,6 @@ export class HomePageComponent implements OnInit {
       // Draw the moving rectangle and its image together
       p.push();
       p.translate(rectStartX + rectWidth / 2, rectStartY + rectHeight / 2, 5); // Move further forward in z
-
-      // Remove independent rotation for the JT box
-      // p.rotateX(degree / 30);
-      // p.rotateY(degree / 45);
 
       p.rectMode(p.CENTER);
       if (img) {

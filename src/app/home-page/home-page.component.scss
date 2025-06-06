@@ -1,7 +1,8 @@
-html, body {
+html, body, #scene-wrapper, canvas {
   height: 100%;
   margin: 0;
   padding: 0;
+  background-color: transparent !important;
   overflow: hidden; // Prevent scrollbars on the whole page
 }
 
@@ -9,7 +10,6 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: black;
   width: 100vw;
   height: 100vh;
   min-height: 100vh;
@@ -21,7 +21,6 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: black;
   width: 800px;   // Adjust as needed
   height: 600px;  // Adjust as needed
   box-shadow: 0 0 32px #000;
@@ -29,4 +28,5 @@ html, body {
   overflow: hidden;
   max-width: 100vw;
   max-height: 100vh;
+  background: transparent !important;
 }

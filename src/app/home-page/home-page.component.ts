@@ -1,6 +1,5 @@
 import * as p5 from "p5";
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-
+import { Component, OnInit, ViewEncapsulation } from "@angular/core";
 
 @Component({
   selector: "app-home-page",
@@ -9,8 +8,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None,
 })
 export class HomePageComponent implements OnInit {
-  private p5;
-  canvas: any;
+  private p5!: p5;
+  private canvas: any;
 
   ngOnInit() {
     this.setup();
@@ -21,107 +20,64 @@ export class HomePageComponent implements OnInit {
   }
 
   private createSketch() {
-    this.p5 = new p5(this.sketch);
+    this.p5 = new p5(this.sketch.bind(this));
   }
 
   private sketch(p: any) {
-    var canvasWidth: number = 1920 * 0.8;
-    var canvasHeight: number = 1080 * 0.8;
+    const canvasWidth: number = 1920 * 0.8; // 1536
+    const canvasHeight: number = 1080 * 0.8; // 864
 
-    var rectStartX = p.random(containerWidth);
-    var rectStartY = p.random(containerHeight);
+    // We will make a square whose side is half of the smaller canvas dimension
+    const containerSize = canvasHeight / 2; // 864 / 2 = 432
+    // Position it so that its center is at (0,0) in WEBGL coordinates:
+    const containerXPos = -containerSize / 2; // -216
+    const containerYPos = -containerSize / 2; // -216
 
-    var rectWidth = 200;
-    var rectHeight = 200;
+    let frameCount = 0;
+    let img: p5.Image | null = null;
 
-    var dotWidth = 5;
-
-    var img;
-
+    // Preload the image
     p.preload = () => {
-      img = p.loadImage("assets/JTJ.png"); // Place your image in src/assets/JT.png
+      img = p.loadImage("assets/treats_logo_v3.png");
     };
 
     p.setup = () => {
-      p.setAttributes('alpha', true);      // enable WebGL transparency
-      p.setAttributes('premultipliedAlpha', false); // optional for better blending
+      // Create a WEBGL canvas with alpha transparency
+      p.setAttributes("alpha", true);
+      p.setAttributes("premultipliedAlpha", false);
+      const c = p.createCanvas(canvasWidth, canvasHeight, p.WEBGL);
 
-      const canvas = p.createCanvas(canvasWidth, canvasHeight, p.WEBGL);
-
-      // Access the WebGL context and force alpha support
-      const gl = p._renderer.GL; // Same as p.drawingContext
+      // Force alpha support check (optional)
+      const gl = p._renderer.GL;
       const contextAttributes = gl.getContextAttributes();
-
       if (!contextAttributes.alpha) {
-        console.warn("WebGL context is NOT alpha-capable. Transparency will not work.");
+        console.warn(
+          "WebGL context is NOT alpha-capable. Transparency may not work."
+        );
       }
 
       // Style the canvas DOM element
-      canvas.elt.style.backgroundColor = 'transparent';
-      canvas.elt.style.position = 'absolute'; // optional: ensures stacking
-      canvas.elt.style.zIndex = '10'; // optional
+      c.elt.style.backgroundColor = "transparent";
+      c.elt.style.position = "absolute";
+      c.elt.style.zIndex = "10";
+      c.parent("scene-wrapper");
 
-      // Attach to your DOM element
-      canvas.parent('scene-wrapper');
-
-      // Clear the canvas every frame for transparency
+      // Clear once to establish the transparent background
       p.clear();
     };
 
-    var rectEndX = rectStartX + rectWidth;
-    var rectEndY = rectStartY + rectHeight;
-
-    var rectSpeedX = 1;
-    var rectSpeedY = 1;
-
-    var frameCount = 0;
-    var radian = 360 / 2;
-    var degree = radian / 180;
-
-    var containerXPos = -(canvasWidth / 4);
-    var containerYPos = -(canvasHeight / 4);
-    var containerWidth = canvasWidth / 2;
-    var containerHeight = canvasHeight / 2;
-
-    var containerXMax = containerXPos + containerWidth;
-    var containerYMax = containerYPos + containerHeight;
-
     p.draw = () => {
       p.clear();
-      degree = frameCount++;
+      frameCount++;
 
-      // Zoom out the scene
-      p.scale(0.7); // Try 0.7 or lower if still clipping
+      // Zoom out so the square doesn’t clip at the edges
+      p.scale(0.7);
 
-      // Rotate the whole scene
-      p.rotateX(degree / 75);
-      p.rotateY(degree / 75);
+      // Rotate the entire scene over time
+      p.rotateX(frameCount / 75);
+      p.rotateY(frameCount / 75);
 
-      p.push();
-      p.rect(containerXPos, containerYPos, containerWidth, containerHeight);
-      p.pop();
-
-      p.colorMode(p.RGB, 255); // Reset color mode for rest of drawing
-      p.rect(containerXPos, containerYPos, containerWidth, containerHeight);
-
-      // Draw the moving rectangle and its image together
-      p.push();
-      p.translate(rectStartX + rectWidth / 2, rectStartY + rectHeight / 2, 5); // Move further forward in z
-
-      p.rectMode(p.CENTER);
-      if (img) {
-        p.noStroke();
-        p.texture(img);
-        p.plane(rectWidth, rectHeight);
-      } else {
-        p.fill(255);
-        p.noStroke();
-        p.plane(rectWidth, rectHeight);
-      }
-      p.pop();
-
-      // Only use 'happy' colors for the fill (skip brown/earthy tones)
-      // We'll use a custom palette of bright, saturated colors
+      // ----- 1) Compute the “happy colors” interpolation -----
       const happyColors = [
         [255, 0, 0],    // Red
         [255, 128, 0],  // Orange
@@ -130,59 +86,48 @@ export class HomePageComponent implements OnInit {
         [0, 255, 255],  // Cyan
         [0, 128, 255],  // Blue
         [128, 0, 255],  // Purple
-        [255, 0, 255]   // Magenta
+        [255, 0, 255],  // Magenta
       ];
-      const transitionFrames = 180; // Slow down: 90 frames per color (1.5s at 60fps)
-      const colorIndex = Math.floor((frameCount / transitionFrames) % happyColors.length);
-      const nextIndex = (colorIndex + 1) % happyColors.length;
+      const transitionFrames = 180;
+      const idx = Math.floor((frameCount / transitionFrames) % happyColors.length);
+      const nextIdx = (idx + 1) % happyColors.length;
       const t = (frameCount % transitionFrames) / transitionFrames;
-      // Interpolate between two happy colors for smooth transition
-      const r = Math.round(happyColors[colorIndex][0] * (1 - t) + happyColors[nextIndex][0] * t);
-      const g = Math.round(happyColors[colorIndex][1] * (1 - t) + happyColors[nextIndex][1] * t);
-      const b = Math.round(happyColors[colorIndex][2] * (1 - t) + happyColors[nextIndex][2] * t);
+      const r = Math.round(
+        happyColors[idx][0] * (1 - t) + happyColors[nextIdx][0] * t
+      );
+      const g = Math.round(
+        happyColors[idx][1] * (1 - t) + happyColors[nextIdx][1] * t
+      );
+      const b = Math.round(
+        happyColors[idx][2] * (1 - t) + happyColors[nextIdx][2] * t
+      );
+
+      // ----- 2) Draw the rotating square with the interpolated fill color -----
+      p.push();
+      p.noStroke();
       p.fill(r, g, b);
+      // This square is centered at (0,0) because Xpos = –size/2, Ypos = –size/2
+      p.rect(containerXPos, containerYPos, containerSize, containerSize);
+      p.pop();
 
-      rectStartX = rectStartX + rectSpeedX;
-      rectEndX = rectEndX + rectSpeedX;
+      // ----- 3) Affix the image to the front face of that square -----
+      p.push();
+      // Move to the very front of the square in Z, so the image “sits” flush on the front face.
+      // We add a tiny offset (+1) to ensure it doesn’t z-fight with the square’s fill.
+      const frontZ = 1;
+      p.translate(0, 0, frontZ + 0.5);
 
-      rectStartY = rectStartY + rectSpeedY;
-      rectEndY = rectEndY + rectSpeedY;
-
-      // X max
-      if (rectStartX >= containerXMax) {
-        rectSpeedX = -rectSpeedX;
-        rectStartX = containerXMax;
-      } else if (rectEndX >= containerXMax) {
-        rectSpeedX = -rectSpeedX;
-        rectEndX = containerXMax;
+      if (img) {
+        p.noStroke();
+        p.texture(img);
+        // Stretch the image to match the square’s size exactly:
+        p.plane(containerSize, containerSize);
+      } else {
+        p.fill(255);
+        p.noStroke();
+        p.plane(containerSize, containerSize);
       }
-
-      // X min
-      else if (rectStartX <= containerXPos) {
-        rectSpeedX = -rectSpeedX;
-        rectStartX = containerXPos;
-      } else if (rectEndX <= containerXPos) {
-        rectSpeedX = -rectSpeedX;
-        rectEndX = containerXPos;
-      }
-
-      // Y max
-      if (rectStartY >= containerYMax) {
-        rectSpeedY = -rectSpeedY;
-        rectStartY = containerYMax;
-      } else if (rectEndY >= containerYMax) {
-        rectSpeedY = -rectSpeedY;
-        rectEndY = containerYMax;
-      }
-
-      // Y min
-      else if (rectStartY <= containerYPos) {
-        rectSpeedY = -rectSpeedY;
-        rectStartY = containerYPos;
-      } else if (rectEndY <= containerYPos) {
-        rectSpeedY = -rectSpeedY;
-        rectEndY = containerYPos;
-      }
+      p.pop();
     };
   }
 }

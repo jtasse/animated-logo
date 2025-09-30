@@ -2,7 +2,7 @@
   "name": "angular-sketchpad",
   "version": "0.0.0",
   "scripts": {
-    "start": "set NODE_OPTIONS=--openssl-legacy-provider && ng serve",
+    "start": "node --openssl-legacy-provider ./node_modules/@angular/cli/bin/ng serve",
     "ng": "ng",
     "build": "ng build",
     "test": "ng test",
@@ -20,11 +20,13 @@
     "@angular/platform-browser-dynamic": "~8.2.9",
     "@angular/router": "~8.2.9",
     "bootstrap": "^4.3.1",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "p5": "^0.10.2",
     "rxjs": "~6.4.0",
+    "source-map": "0.7.4",
     "tslib": "^1.10.0",
-    "zone.js": "~0.9.1",
-    "source-map": "0.7.4"
+    "zone.js": "~0.9.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.803.23",
@@ -46,6 +48,6 @@
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
-    "typescript": "~3.5.3"
+    "typescript": "3.5"
   }
 }

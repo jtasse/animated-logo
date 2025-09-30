@@ -1,32 +1,29 @@
-html, body, #scene-wrapper, canvas {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background-color: transparent !important;
-  overflow: hidden; // Prevent scrollbars on the whole page
+html,
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	background-color: transparent; /* fully transparent page */
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100vw;
-  height: 100vh;
-  min-height: 100vh;
-  min-width: 100vw;
-  overflow: hidden;
+#scene-wrapper {
+	width: 800px;
+	height: 600px;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	background-color: transparent; /* ensure wrapper is transparent */
 }
 
-.scene-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 800px;   // Adjust as needed
-  height: 600px;  // Adjust as needed
-  box-shadow: 0 0 32px #000;
-  border-radius: 12px;
-  overflow: hidden;
-  max-width: 100vw;
-  max-height: 100vh;
-  background: transparent !important;
+#scene-wrapper canvas {
+	width: 100%;
+	height: 100%;
+	display: block;
+	background-color: transparent; /* ensure canvas itself is transparent */
 }

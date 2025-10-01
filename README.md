@@ -1,9 +1,10 @@
 # Intro
-
 This project creates an animated scene with [Angular](https://angular.io/) and [P5JS](https://p5js.org/). As part of this, it will animate an image file specified by the user. It is based heavily on the [P5](https://editor.p5js.org/icm/sketches/BJKWv5Tn) and [angular-sketchpad](https://github.com/andrewevans0102/angular-sketchpad) examples, but I have modified the behavior quite a bit since then.
 
-# Running the project
+# Demo
+Check out https://jtasse.github.io/animated-logo to see the logo in action.
 
+# Running the project
 - Clone the repo
 - Open the repo in your favorite IDE
 - Run `npm install` to download dependencies
@@ -11,7 +12,6 @@ This project creates an animated scene with [Angular](https://angular.io/) and [
 - Open the project in a browser (default url is: http://localhost:4200/home-page)
 
 # Changing the logo
-
 By default, the project uses a logo I created. To change this:
 
 - In an IDE, open `src\app\home-page\home-page.component.ts`
@@ -28,7 +28,6 @@ p.preload = () => {
 > **NOTE**: I know, I really should move this to a configuration file at some point :)
 
 # Other Options
-
 If you look around the homepage component, you'll see there are a lot of options for things like colors, rotation speed, etc. At one point, I even modified this app to export the logo's frames for use in a video.
 
 Just expect a lot of trial and error if you decide to make significant changes ;)
